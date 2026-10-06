@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <!-- Phần Logo Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#154B40"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nhà Trọ Xanh"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quản lý khu trọ dễ dàng"
+            android:textColor="#A5D6A7" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Thanh Tab Chuyển Đổi -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/tabLandlord"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="Chủ trọ"
+                android:backgroundTint="#E0E0E0"
+                android:textColor="#757575"/>
+
+            <Button
+                android:id="@+id/tabTenant"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="Khách thuê"
+                android:backgroundTint="#FFFFFF"
+                android:textColor="#154B40"/>
+        </LinearLayout>
+
+        <!-- Form Đăng Nhập Khách Thuê -->
+        <LinearLayout
+            android:id="@+id/layoutTenantForm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <EditText
+                android:id="@+id/edtRoomCode"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Mã phòng (VD: SP203)"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/edtPasswordTenant"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp"/>
+
+            <Button
+                android:id="@+id/btnLoginTenant"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Đăng nhập"
+                android:backgroundTint="#154B40"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+
+        <!-- Form Đăng Nhập Chủ Trọ -->
+        <LinearLayout
+            android:id="@+id/layoutLandlordForm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/edtPhoneLandlord"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Số điện thoại"
+                android:inputType="phone"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/edtPasswordLandlord"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp"/>
+
+            <Button
+                android:id="@+id/btnLoginLandlord"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Đăng nhập"
+                android:backgroundTint="#154B40"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
