@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_screen"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ============================== -->
+        <!-- HEADER NHÀ TRỌ XANH -->
+        <!-- ============================== -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
+            android:background="@color/primary_green"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
+
+            <!-- Logo -->
+            <FrameLayout
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_logo_gold">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="⌂"
+                    android:textColor="@color/primary_green"
+                    android:textSize="30sp" />
+
+            </FrameLayout>
+
+            <!-- Tên ứng dụng -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Nhà Trọ Xanh"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <!-- Mô tả -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Quản lý khu trọ dễ dàng"
+                android:textColor="@color/text_subtitle_on_green"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+
+        <!-- ============================== -->
+        <!-- NỘI DUNG ĐĂNG NHẬP -->
+        <!-- ============================== -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- ============================== -->
+            <!-- THANH CHUYỂN ĐỔI 3 VAI TRÒ -->
+            <!-- ============================== -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/bg_tab_track"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <!-- TAB CHỦ TRỌ -->
+                <TextView
+                    android:id="@+id/tabLandlord"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_tab_active"
+                    android:contentDescription="Chọn đăng nhập chủ trọ"
+                    android:gravity="center"
+                    android:text="Chủ trọ"
+                    android:textColor="@color/primary_green"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- TAB KHÁCH THUÊ -->
+                <TextView
+                    android:id="@+id/tabTenant"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:contentDescription="Chọn đăng nhập khách thuê"
+                    android:gravity="center"
+                    android:text="Khách thuê"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- TAB ADMIN -->
+                <TextView
+                    android:id="@+id/tabAdmin"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:contentDescription="Chọn đăng nhập Admin"
+                    android:gravity="center"
+                    android:text="Admin"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+            <!-- ================================= -->
+            <!-- FORM 1: ĐĂNG NHẬP CHỦ TRỌ -->
+            <!-- ================================= -->
+
+            <LinearLayout
+                android:id="@+id/layoutLandlordForm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <!-- SỐ ĐIỆN THOẠI -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_card_input"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Số điện thoại"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/edtPhoneLandlord"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="2dp"
+                        android:background="@null"
+                        android:hint="Nhập số điện thoại"
+                        android:inputType="phone"
+                        android:padding="0dp"
+                        android:text="0912 345 678"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- MẬT KHẨU CHỦ TRỌ -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_input"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mật khẩu"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/edtPasswordLandlord"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="2dp"
+                        android:background="@null"
+                        android:hint="Nhập mật khẩu"
+                        android:inputType="textPassword"
+                        android:padding="0dp"
+                        android:text="12345678"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- QUÊN MẬT KHẨU -->
+                <TextView
+                    android:id="@+id/tvForgotPassLandlord"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="14dp"
+                    android:paddingVertical="4dp"
+                    android:text="Quên mật khẩu?"
+                    android:textColor="@color/primary_green"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+
+                <!-- NÚT ĐĂNG NHẬP CHỦ TRỌ -->
+                <TextView
+                    android:id="@+id/btnLoginLandlord"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_btn_primary"
+                    android:gravity="center"
+                    android:text="Đăng nhập"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+
+                <!-- HOẶC -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginVertical="14dp"
+                    android:text="hoặc"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+
+                <!-- NHẬN OTP -->
+                <TextView
+                    android:id="@+id/btnOtpSms"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_btn_outline"
+                    android:gravity="center"
+                    android:text="Nhận mã OTP qua SMS"
+                    android:textColor="@color/primary_green"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+
+                <!-- CHUYỂN SANG KHÁCH THUÊ -->
+                <TextView
+                    android:id="@+id/tvSwitchToTenantHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:gravity="center"
+                    android:paddingVertical="6dp"
+                    android:text="Khách mới? Nhập mã phòng do chủ trọ cấp"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+
+            <!-- ================================= -->
+            <!-- FORM 2: ĐĂNG NHẬP KHÁCH THUÊ -->
+            <!-- ================================= -->
+
+            <LinearLayout
+                android:id="@+id/layoutTenantForm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- MÃ PHÒNG -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_card_input"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mã phòng"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/edtRoomCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:background="@null"
+                        android:hint="VD: SP203"
+                        android:inputType="textCapCharacters"
+                        android:padding="0dp"
+                        android:text="SP203"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- MẬT KHẨU KHÁCH THUÊ -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="36dp"
+                    android:background="@drawable/bg_card_input"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mật khẩu"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/edtPasswordTenant"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:background="@null"
+                        android:hint="Nhập mật khẩu"
+                        android:inputType="textPassword"
+                        android:padding="0dp"
+                        android:text="12345678"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- NÚT ĐĂNG NHẬP KHÁCH THUÊ -->
+                <TextView
+                    android:id="@+id/btnLoginTenant"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="36dp"
+                    android:background="@drawable/bg_btn_primary"
+                    android:gravity="center"
+                    android:text="Đăng nhập"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+
+                <!-- QUÊN MẬT KHẨU KHÁCH THUÊ -->
+                <TextView
+                    android:id="@+id/btnForgotPassTenant"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_btn_outline"
+                    android:gravity="center"
+                    android:text="Quên mật khẩu?"
+                    android:textColor="@color/primary_green"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+
+            <!-- ================================= -->
+            <!-- FORM 3: ĐĂNG NHẬP ADMIN -->
+            <!-- ================================= -->
+
+            <LinearLayout
+                android:id="@+id/layoutAdminForm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- TIÊU ĐỀ ADMIN -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Đăng nhập quản trị hệ thống"
+                    android:textColor="@color/primary_green"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+
+                <!-- MÔ TẢ -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="Dành riêng cho quản trị viên Nhà Trọ Xanh"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+
+                <!-- EMAIL ADMIN -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_card_input"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email quản trị"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/edtEmailAdmin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:background="@null"
+                        android:hint="Nhập email Admin"
+                        android:inputType="textEmailAddress"
+                        android:autofillHints="emailAddress"
+                        android:importantForAutofill="yes"
+                        android:singleLine="true"
+                        android:padding="0dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- MẬT KHẨU ADMIN -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_card_input"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mật khẩu"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/edtPasswordAdmin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:background="@null"
+                        android:hint="Nhập mật khẩu Admin"
+                        android:inputType="textPassword"
+                        android:autofillHints="password"
+                        android:importantForAutofill="yes"
+                        android:singleLine="true"
+                        android:padding="0dp"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+
+                <!-- THÔNG TIN BẢO MẬT -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="Chỉ tài khoản quản trị được cấp quyền mới có thể đăng nhập."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+
+                <!-- NÚT ĐĂNG NHẬP ADMIN -->
+                <TextView
+                    android:id="@+id/btnLoginAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_btn_primary"
+                    android:contentDescription="Đăng nhập với quyền Admin"
+                    android:gravity="center"
+                    android:text="Đăng nhập Admin"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+
+                <!-- GHI CHÚ -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:gravity="center"
+                    android:text="Nhà Trọ Xanh - Hệ thống quản trị"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
