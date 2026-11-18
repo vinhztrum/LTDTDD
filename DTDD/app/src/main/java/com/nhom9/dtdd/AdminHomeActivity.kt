@@ -1,6 +1,6 @@
 package com.nhom9.dtdd
-import androidx.activity.OnBackPressedCallback
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -10,39 +10,43 @@ import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.widget.*
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import java.text.NumberFormat
 import java.util.Locale
 class AdminHomeActivity : AppCompatActivity() {
-    private val green = Color.rgb(15, 76, 71)
-    private val mint = Color.rgb(226, 242, 234)
-    private val gold = Color.rgb(242, 193, 78)
-    private val bg = Color.rgb(247, 249, 248)
-    private val ink = Color.rgb(20, 48, 45)
-    private val muted = Color.rgb(92, 112, 109)
+    private val green = Color.rgb(9, 91, 79)
+    private val darkGreen = Color.rgb(8, 65, 61)
+    private val mint = Color.rgb(226, 245, 237)
+    private val bg = Color.rgb(245, 248, 247)
+    private val ink = Color.rgb(23, 55, 48)
+    private val muted = Color.rgb(99, 123, 115)
+    private val border = Color.rgb(222, 235, 229)
+    private val orange = Color.rgb(184, 101, 45)
+
     private var current = "dashboard"
     private var userId = "U002"
     private var propertyId = "NT001"
     private var roomId = ""
     private var maintenanceId = ""
     private var editing = false
+
     private lateinit var root: LinearLayout
     private lateinit var body: LinearLayout
+
     private val money =
         NumberFormat.getIntegerInstance(Locale("vi", "VN"))
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Khởi tạo dữ liệu quản trị
         AdminStore.init(this)
-
-        // Khởi tạo dữ liệu phòng trọ
         MotelRepository.init(this)
 
-        // Xử lý nút quay lại
+        window.statusBarColor = darkGreen
+        window.navigationBarColor = Color.BLACK
+
         onBackPressedDispatcher.addCallback(
             this,
             object : OnBackPressedCallback(true) {
@@ -50,189 +54,293 @@ class AdminHomeActivity : AppCompatActivity() {
                     if (current == "dashboard") {
                         finish()
                     } else {
-                        route(parentRoute(current))
+                        show(parentRoute(current))
                     }
                 }
             }
         )
 
-        // HIỂN THỊ DASHBOARD ADMIN
         show("dashboard")
     }
+    private fun dp(value: Int): Int =
+        (value * resources.displayMetrics.density).toInt()
 
-
-    private fun dp(x: Int): Int {
-        return (x * resources.displayMetrics.density).toInt()
-    }
     private fun shape(
         color: Int,
-        radius: Int = 14,
+        radius: Int = 16,
         stroke: Int = Color.TRANSPARENT
     ): GradientDrawable {
         return GradientDrawable().apply {
             setColor(color)
             cornerRadius = dp(radius).toFloat()
-
             if (stroke != Color.TRANSPARENT) {
                 setStroke(dp(1), stroke)
             }
         }
     }
-    private fun ll(vertical: Boolean = true): LinearLayout {
-        return LinearLayout(this).apply {
-            orientation = if (vertical) {
-                LinearLayout.VERTICAL
-            } else {
+
+    private fun layout(horizontal: Boolean = false) =
+        LinearLayout(this).apply {
+            orientation = if (horizontal) {
                 LinearLayout.HORIZONTAL
+            } else {
+                LinearLayout.VERTICAL
             }
         }
-    }
-    private fun label(
-        s: String,
-        size: Float = 14f,
+
+    private fun text(
+        value: String,
+        size: Float = 16f,
         bold: Boolean = false,
         color: Int = ink
     ): TextView {
         return TextView(this).apply {
-            text = s
+            this.text = value
             textSize = size
             setTextColor(color)
+
             if (bold) {
                 setTypeface(null, Typeface.BOLD)
             }
+
             includeFontPadding = true
+            setLineSpacing(dp(2).toFloat(), 1.05f)
         }
     }
-    private fun box(
+
+    private fun card(
         parent: LinearLayout,
-        padding: Int = 14
+        padding: Int = 16
     ): LinearLayout {
-        return ll().apply {
-            background = shape(
-                Color.WHITE,
-                15,
-                Color.rgb(224, 234, 228)
-            )
+        val c = layout().apply {
+            background = shape(Color.WHITE, 18, border)
+            elevation = dp(1).toFloat()
             setPadding(
                 dp(padding),
                 dp(padding),
                 dp(padding),
                 dp(padding)
             )
-            val lp = LinearLayout.LayoutParams(-1, -2)
-            lp.bottomMargin = dp(10)
-            parent.addView(this, lp)
         }
+
+        parent.addView(
+            c,
+            LinearLayout.LayoutParams(-1, -2).apply {
+                bottomMargin = dp(12)
+            }
+        )
+
+        return c
     }
-    private fun heading(text: String) {
-        val t = label(text, 17f, true)
-        val lp = LinearLayout.LayoutParams(-1, -2)
-        lp.setMargins(0, dp(16), 0, dp(12))
-        body.addView(t, lp)
+
+    private fun heading(value: String) {
+        body.addView(
+            text(value, 20f, true),
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(18)
+                bottomMargin = dp(12)
+            }
+        )
     }
+
     private fun paragraph(
         parent: LinearLayout,
-        text: String
+        value: String
     ) {
-        val t = label(text, 12f, false, muted)
-        val lp = LinearLayout.LayoutParams(-1, -2)
-        lp.topMargin = dp(6)
-        parent.addView(t, lp)
+        parent.addView(
+            text(value, 14f, false, muted),
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(7)
+            }
+        )
     }
-    private fun action(
+
+    private fun button(
         parent: LinearLayout,
-        text: String,
+        title: String,
         secondary: Boolean = false,
-        run: () -> Unit
+        action: () -> Unit
     ) {
         val b = TextView(this).apply {
-            this.text = text
-            textSize = 14f
+            text = title
+            textSize = 16f
             gravity = Gravity.CENTER
-
             setTypeface(null, Typeface.BOLD)
+            setTextColor(if (secondary) green else Color.WHITE)
 
-            setTextColor(
-                if (secondary) green else Color.WHITE
-            )
             background = shape(
                 if (secondary) mint else green,
-                11
+                14
             )
-            setOnClickListener {
-                run()
-            }
+
+            isClickable = true
+            isFocusable = true
+            setOnClickListener { action() }
         }
 
-        val lp = LinearLayout.LayoutParams(-1, dp(46))
-        lp.topMargin = dp(9)
-
-        parent.addView(b, lp)
+        parent.addView(
+            b,
+            LinearLayout.LayoutParams(-1, dp(54)).apply {
+                topMargin = dp(10)
+                bottomMargin = dp(3)
+            }
+        )
     }
 
-    private fun shortAction(
-        parent: LinearLayout,
-        text: String,
-        run: () -> Unit
-    ) {
-        action(parent, text, true, run)
+    private fun symbolFor(value: String): String {
+        return when {
+            value.contains("tài khoản", true) ||
+                    value.contains("quản trị", true) -> "♙"
+
+            value.contains("nhà trọ", true) -> "⌂"
+            value.contains("phòng", true) -> "▦"
+            value.contains("hóa đơn", true) -> "▤"
+            value.contains("doanh thu", true) -> "▥"
+            value.contains("bảo trì", true) ||
+                    value.contains("sửa chữa", true) -> "⚒"
+
+            value.contains("thông báo", true) -> "♧"
+            value.contains("báo cáo", true) -> "▥"
+            else -> "◈"
+        }
+    }
+
+    private fun chip(
+        value: String,
+        positive: Boolean = true
+    ): TextView {
+        val foreground = if (positive) green else orange
+        val backgroundColor = if (positive) {
+            Color.rgb(229, 246, 235)
+        } else {
+            Color.rgb(255, 240, 221)
+        }
+
+        return text("●  $value", 13f, true, foreground).apply {
+            background = shape(backgroundColor, 18)
+            setPadding(dp(10), dp(6), dp(10), dp(6))
+        }
     }
 
     private fun entry(
         parent: LinearLayout,
         title: String,
         subtitle: String,
-        badge: String = "",
-        run: () -> Unit
+        status: String = "",
+        onClick: () -> Unit
     ) {
-        val c = box(parent)
+        val c = card(parent)
 
-        c.addView(label(title, 15f, true))
+        val row = layout(true).apply {
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        c.addView(row)
 
-        if (subtitle.isNotBlank()) {
-            paragraph(c, subtitle)
+        val iconView = text(
+            symbolFor(title), 24f, true, green
+        ).apply {
+            gravity = Gravity.CENTER
+            background = shape(mint, 14)
         }
 
-        if (badge.isNotBlank()) {
-            paragraph(c, "● $badge")
+        row.addView(
+            iconView,
+            LinearLayout.LayoutParams(dp(48), dp(48))
+        )
+
+        val content = layout().apply {
+            setPadding(dp(12), 0, dp(5), 0)
+        }
+        row.addView(
+            content,
+            LinearLayout.LayoutParams(0, -2, 1f)
+        )
+
+        content.addView(text(title, 17f, true))
+
+        if (subtitle.isNotEmpty()) {
+            paragraph(content, subtitle)
         }
 
-        c.setOnClickListener {
-            run()
+        if (status.isNotEmpty()) {
+            val positive = !status.contains("khóa", true) &&
+                    !status.contains("ngừng", true) &&
+                    !status.contains("OVERDUE", true)
+
+            content.addView(
+                chip(status, positive),
+                LinearLayout.LayoutParams(-2, -2).apply {
+                    topMargin = dp(10)
+                }
+            )
         }
 
-        val lp = c.layoutParams as LinearLayout.LayoutParams
-        c.minimumHeight = dp(75)
-        c.layoutParams = lp
+        val arrow = text("›", 28f, false, muted).apply {
+            gravity = Gravity.CENTER
+        }
+        row.addView(
+            arrow,
+            LinearLayout.LayoutParams(dp(23), dp(48))
+        )
+
+        c.minimumHeight = dp(88)
+        c.isClickable = true
+        c.isFocusable = true
+        c.setOnClickListener { onClick() }
     }
 
-    private fun edit(
+    private fun detailRow(
         parent: LinearLayout,
-        hint: String,
+        title: String,
+        value: String
+    ) {
+        val row = layout(true).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, dp(12), 0, dp(12))
+        }
+
+        parent.addView(row)
+
+        row.addView(
+            text(title, 14f, false, muted),
+            LinearLayout.LayoutParams(0, -2, 1f)
+        )
+
+        row.addView(
+            text(value, 15f, true).apply {
+                gravity = Gravity.END
+            },
+            LinearLayout.LayoutParams(0, -2, 1.5f)
+        )
+
+        parent.addView(
+            View(this).apply {
+                setBackgroundColor(border)
+            },
+            LinearLayout.LayoutParams(-1, dp(1))
+        )
+    }
+
+    private fun input(
+        parent: LinearLayout,
+        title: String,
         value: String = "",
         numeric: Boolean = false
     ): EditText {
+
         parent.addView(
-            label(hint, 12f, true, muted)
+            text(title, 15f, true, muted),
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(10)
+            }
         )
 
         val e = EditText(this).apply {
             setText(value)
-            textSize = 14f
+            textSize = 16f
             setSingleLine(true)
-
-            setPadding(
-                dp(13),
-                dp(8),
-                dp(13),
-                dp(8)
-            )
-
-            background = shape(
-                Color.WHITE,
-                10,
-                Color.rgb(214, 226, 218)
-            )
+            setPadding(dp(14), 0, dp(14), 0)
+            background = shape(Color.WHITE, 12, border)
 
             if (numeric) {
                 inputType =
@@ -240,22 +348,25 @@ class AdminHomeActivity : AppCompatActivity() {
             }
         }
 
-        val lp = LinearLayout.LayoutParams(-1, dp(48))
-        lp.topMargin = dp(5)
-        lp.bottomMargin = dp(13)
-
-        parent.addView(e, lp)
+        parent.addView(
+            e,
+            LinearLayout.LayoutParams(-1, dp(54)).apply {
+                topMargin = dp(7)
+                bottomMargin = dp(8)
+            }
+        )
 
         return e
     }
 
-    private fun search(onChange: (String) -> Unit) {
-        val e = edit(body, "Tìm kiếm", "")
-
-        e.hint = "Nhập từ khóa tìm kiếm..."
+    private fun search(
+        parent: LinearLayout,
+        onChange: (String) -> Unit
+    ) {
+        val e = input(parent, "Tìm kiếm")
+        e.hint = "Nhập tên, email hoặc từ khóa..."
 
         e.addTextChangedListener(object : TextWatcher {
-
             override fun beforeTextChanged(
                 s: CharSequence?,
                 start: Int,
@@ -300,13 +411,12 @@ class AdminHomeActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun route(name: String) {
-        show(name)
-    }
+    private fun price(value: Long): String =
+        "${money.format(value)}đ"
 
     private fun finishAction(
         message: String,
-        destination: String = "dashboard"
+        destination: String
     ) {
         AdminStore.writeAudit(this, message)
 
@@ -316,200 +426,12 @@ class AdminHomeActivity : AppCompatActivity() {
             Toast.LENGTH_SHORT
         ).show()
 
-        route(destination)
+        show(destination)
     }
 
-    private fun price(v: Long): String {
-        return "${money.format(v)}đ"
-    }
-
-    // =========================================
-    // 2. ĐIỀU HƯỚNG CÁC MÀN HÌNH
-    // =========================================
-
-    private fun show(page: String) {
-
-        current = page
-
-        root = ll()
-        root.setBackgroundColor(bg)
-
-        setContentView(root)
-
-        val header = ll().apply {
-            setPadding(
-                dp(18),
-                dp(18),
-                dp(18),
-                dp(16)
-            )
-
-            setBackgroundColor(green)
-        }
-
-        root.addView(
-            header,
-            LinearLayout.LayoutParams(-1, -2)
-        )
-
-        val top = ll(false)
-        header.addView(top)
-
-        val back = label(
-            if (page == "dashboard") {
-                "⌂ NHÀ TRỌ XANH / ADMIN"
-            } else {
-                "‹  Quay lại"
-            },
-            12f,
-            true,
-            Color.WHITE
-        )
-
-        top.addView(
-            back,
-            LinearLayout.LayoutParams(
-                0,
-                dp(35),
-                1f
-            )
-        )
-
-        back.gravity = Gravity.CENTER_VERTICAL
-
-        back.setOnClickListener {
-            if (page == "dashboard") {
-                route("profile")
-            } else {
-                route(parentRoute(page))
-            }
-        }
-
-        // CHUÔNG THÔNG BÁO
-        val bell = label(
-            "🔔",
-            21f,
-            true,
-            Color.WHITE
-        )
-
-        top.addView(bell)
-
-        bell.setOnClickListener {
-            route("notifications")
-        }
-
-        // TÊN MÀN HÌNH
-        header.addView(
-            label(
-                title(page),
-                23f,
-                true,
-                Color.WHITE
-            )
-        )
-
-        paragraphHeader(
-            header,
-            "Quản lý hệ thống  •  Dữ liệu minh họa trên máy"
-        )
-
-        // VÙNG CUỘN NỘI DUNG
-        val scroll = ScrollView(this).apply {
-            isFillViewport = true
-        }
-
-        root.addView(
-            scroll,
-            LinearLayout.LayoutParams(
-                -1,
-                0,
-                1f
-            )
-        )
-
-        body = ll().apply {
-            setPadding(
-                dp(16),
-                dp(14),
-                dp(16),
-                dp(15)
-            )
-        }
-
-        scroll.addView(body)
-
-        // ĐIỀU HƯỚNG ĐẾN CÁC CHỨC NĂNG
-        when (page) {
-
-            "dashboard" -> dashboard()
-            "notifications" -> notifications()
-
-            "accounts" -> accounts()
-            "accountDetail" -> accountDetail()
-            "accountForm" -> accountForm()
-            "accountLock" -> accountLock()
-
-            "properties" -> properties()
-            "propertyDetail" -> propertyDetail()
-            "propertyForm" -> propertyForm()
-
-            "rooms" -> rooms()
-            "tenants" -> tenants()
-
-            "invoices" -> invoices()
-            "invoiceDetail" -> invoiceDetail()
-
-            "maintenance" -> maintenance()
-            "maintenanceDetail" -> maintenanceDetail()
-
-            "reports" -> reports()
-            "reportExport" -> reportExport()
-
-            "roles" -> roles()
-            "audit" -> audit()
-            "settings" -> settings()
-
-            "profile" -> profile()
-            "changePassword" -> changePassword()
-
-            "saved" -> saved()
-            "logout" -> logout()
-
-            "forgot" -> info(
-                "Khôi phục mật khẩu cần backend gửi email. " +
-                        "Chưa triển khai trong bản demo."
-            )
-
-            "empty" -> empty()
-
-            else -> dashboard()
-        }
-
-        bottomBar()
-    }
-
-    private fun paragraphHeader(
-        header: LinearLayout,
-        str: String
-    ) {
-        val t = label(
-            str,
-            11f,
-            false,
-            Color.rgb(196, 226, 217)
-        )
-
-        val lp = LinearLayout.LayoutParams(-1, -2)
-        lp.topMargin = dp(6)
-
-        header.addView(t, lp)
-    }
-
-    private fun title(p: String): String {
+    private fun title(page: String): String {
         return mapOf(
             "dashboard" to "Tổng quan hệ thống",
-            "notifications" to "Thông báo",
             "accounts" to "Quản lý tài khoản",
             "accountDetail" to "Chi tiết tài khoản",
             "accountForm" to "Thêm / sửa tài khoản",
@@ -517,7 +439,7 @@ class AdminHomeActivity : AppCompatActivity() {
             "properties" to "Quản lý nhà trọ",
             "propertyDetail" to "Chi tiết nhà trọ",
             "propertyForm" to "Thêm / sửa nhà trọ",
-            "rooms" to "Giám sát phòng",
+            "rooms" to "Giám sát phòng trọ",
             "tenants" to "Tra cứu khách thuê",
             "invoices" to "Danh sách hóa đơn",
             "invoiceDetail" to "Chi tiết hóa đơn",
@@ -525,184 +447,308 @@ class AdminHomeActivity : AppCompatActivity() {
             "maintenanceDetail" to "Chi tiết bảo trì",
             "reports" to "Báo cáo thống kê",
             "reportExport" to "Xuất báo cáo",
+            "notifications" to "Thông báo",
             "roles" to "Phân quyền",
             "audit" to "Nhật ký hoạt động",
-            "settings" to "Cài đặt",
+            "settings" to "Cài đặt hệ thống",
             "profile" to "Hồ sơ Admin",
             "changePassword" to "Đổi mật khẩu",
-            "saved" to "Thành công",
             "logout" to "Đăng xuất",
-            "empty" to "Chưa có dữ liệu"
-        )[p] ?: "Quản trị"
+            "empty" to "Đang phát triển"
+        )[page] ?: "Quản trị hệ thống"
     }
 
-    private fun parentRoute(p: String): String {
-        return when (p) {
-
+    private fun parentRoute(page: String): String =
+        when (page) {
             "accountDetail", "accountForm" -> "accounts"
             "accountLock" -> "accountDetail"
-
             "propertyDetail", "propertyForm" -> "properties"
-
             "invoiceDetail" -> "invoices"
-
             "maintenanceDetail" -> "maintenance"
-
             "reportExport" -> "reports"
-
             "roles", "audit", "profile" -> "settings"
-
             "changePassword", "logout" -> "profile"
-
             else -> "dashboard"
         }
+
+    private fun show(page: String) {
+        current = page
+
+        root = layout().apply {
+            setBackgroundColor(bg)
+        }
+        setContentView(root)
+
+        // Header xanh nổi bật
+        val header = layout().apply {
+            setPadding(
+                dp(20), dp(18),
+                dp(20), dp(20)
+            )
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(green, darkGreen)
+            )
+        }
+
+        root.addView(
+            header,
+            LinearLayout.LayoutParams(-1, -2)
+        )
+
+        val toolbar = layout(true).apply {
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        header.addView(toolbar)
+
+        val back = text(
+            if (page == "dashboard") {
+                "⌂  NHÀ TRỌ XANH / ADMIN"
+            } else {
+                "‹  Quay lại"
+            },
+            14f, true, Color.WHITE
+        ).apply {
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        toolbar.addView(
+            back,
+            LinearLayout.LayoutParams(0, dp(44), 1f)
+        )
+
+        back.setOnClickListener {
+            if (page == "dashboard") {
+                show("profile")
+            } else {
+                show(parentRoute(page))
+            }
+        }
+
+        val bell = text(
+            "🔔", 23f, true, Color.WHITE
+        ).apply {
+            gravity = Gravity.CENTER
+            setOnClickListener {
+                show("notifications")
+            }
+        }
+
+        toolbar.addView(
+            bell,
+            LinearLayout.LayoutParams(dp(44), dp(44))
+        )
+
+        header.addView(
+            text(title(page), 25f, true, Color.WHITE)
+        )
+
+        paragraphHeader(
+            header,
+            "Quản lý hệ thống · Dữ liệu minh họa trên máy"
+        )
+
+        val scroll = ScrollView(this).apply {
+            isFillViewport = true
+            clipToPadding = false
+        }
+
+        root.addView(
+            scroll,
+            LinearLayout.LayoutParams(-1, 0, 1f)
+        )
+
+        body = layout().apply {
+            setPadding(
+                dp(16), dp(18),
+                dp(16), dp(24)
+            )
+        }
+        scroll.addView(body)
+
+        when (page) {
+            "dashboard" -> dashboard()
+            "accounts" -> accounts()
+            "accountDetail" -> accountDetail()
+            "accountForm" -> accountForm()
+            "accountLock" -> accountLock()
+            "properties" -> properties()
+            "propertyDetail" -> propertyDetail()
+            "propertyForm" -> propertyForm()
+            "rooms" -> rooms()
+            "tenants" -> tenants()
+            "invoices" -> invoices()
+            "invoiceDetail" -> invoiceDetail()
+            "maintenance" -> maintenance()
+            "maintenanceDetail" -> maintenanceDetail()
+            "reports" -> reports()
+            "reportExport" -> reportExport()
+            "notifications" -> notifications()
+            "roles" -> roles()
+            "audit" -> audit()
+            "settings" -> settings()
+            "profile" -> profile()
+            "changePassword" -> changePassword()
+            "logout" -> logout()
+            "empty" -> empty()
+            else -> dashboard()
+        }
+
+        bottomBar()
     }
 
-    // =========================================
-    // 3. THANH ĐIỀU HƯỚNG DƯỚI
-    // =========================================
+    private fun paragraphHeader(
+        parent: LinearLayout,
+        value: String
+    ) {
+        parent.addView(
+            text(
+                value, 13f, false,
+                Color.rgb(208, 234, 223)
+            ),
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(6)
+            }
+        )
+    }
 
     private fun bottomBar() {
-
-        val bar = ll(false).apply {
-            setPadding(
-                dp(5),
-                dp(7),
-                dp(5),
-                dp(7)
-            )
-
+        val bar = layout(true).apply {
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(5), dp(5), dp(5), dp(5))
             setBackgroundColor(Color.WHITE)
+            elevation = dp(6).toFloat()
         }
 
         root.addView(
             bar,
-            LinearLayout.LayoutParams(-1, dp(66))
+            LinearLayout.LayoutParams(-1, dp(72))
         )
 
-        val menus = listOf(
-            "⌂" to "dashboard",
-            "▦" to "properties",
-            "♙" to "accounts",
-            "▥" to "reports",
-            "⚙" to "settings"
+        val items = listOf(
+            Triple("⌂", "Tổng quan", "dashboard"),
+            Triple("▦", "Nhà trọ", "properties"),
+            Triple("♙", "Tài khoản", "accounts"),
+            Triple("▥", "Báo cáo", "reports"),
+            Triple("⚙", "Cài đặt", "settings")
         )
 
-        menus.forEach { (icon, route) ->
+        items.forEach { (icon, label, destination) ->
+            val selected =
+                current == destination ||
+                        (
+                                destination == "accounts" &&
+                                        current.startsWith("account")
+                                ) ||
+                        (
+                                destination == "properties" &&
+                                        current.startsWith("property")
+                                )
 
-            val name = when (route) {
-                "dashboard" -> "Tổng quan"
-                "properties" -> "Nhà trọ"
-                "accounts" -> "Tài khoản"
-                "reports" -> "Báo cáo"
-                else -> "Cài đặt"
+            val item = layout().apply {
+                gravity = Gravity.CENTER
+                if (selected) {
+                    background = shape(mint, 12)
+                }
+                setOnClickListener {
+                    show(destination)
+                }
             }
-
-            val b = label(
-                "$icon\n$name",
-                11f,
-                current == route,
-                if (current == route) green else muted
-            )
-
-            b.gravity = Gravity.CENTER
 
             bar.addView(
-                b,
-                LinearLayout.LayoutParams(
-                    0,
-                    -1,
-                    1f
-                )
+                item,
+                LinearLayout.LayoutParams(0, -1, 1f).apply {
+                    setMargins(dp(2), 0, dp(2), 0)
+                }
             )
 
-            b.setOnClickListener {
-                this.route(route)
-            }
+            item.addView(
+                text(
+                    icon, 22f, true,
+                    if (selected) green else muted
+                ).apply {
+                    gravity = Gravity.CENTER
+                }
+            )
+
+            item.addView(
+                text(
+                    label, 12f, selected,
+                    if (selected) green else muted
+                ).apply {
+                    gravity = Gravity.CENTER
+                }
+            )
         }
     }
-
-    // =========================================
-    // 4. THẺ THỐNG KÊ DASHBOARD
-    // =========================================
-
     private fun metricRow(
-        a: Pair<String, String>,
-        b: Pair<String, String>
+        first: Pair<String, String>,
+        second: Pair<String, String>
     ) {
-        val row = ll(false)
+        val row = layout(true)
         body.addView(row)
 
-        listOf(a, b).forEach { (k, v) ->
+        listOf(first, second).forEachIndexed {
+                index, pair ->
 
-            val c = ll().apply {
-
+            val c = layout().apply {
                 setPadding(
-                    dp(14),
-                    dp(15),
-                    dp(12),
-                    dp(15)
+                    dp(14), dp(15),
+                    dp(12), dp(14)
                 )
-
-                background = shape(
-                    Color.WHITE,
-                    14,
-                    Color.rgb(225, 235, 228)
-                )
+                background = shape(Color.WHITE, 18, border)
+                elevation = dp(1).toFloat()
             }
 
-            val lp = LinearLayout.LayoutParams(
-                0,
-                dp(98),
-                1f
+            row.addView(
+                c,
+                LinearLayout.LayoutParams(
+                    0, dp(132), 1f
+                ).apply {
+                    leftMargin =
+                        if (index == 1) dp(5) else 0
+                    rightMargin =
+                        if (index == 0) dp(5) else 0
+                    bottomMargin = dp(10)
+                }
             )
 
-            lp.setMargins(
-                dp(2),
-                0,
-                dp(5),
-                dp(8)
+            val top = layout(true).apply {
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            c.addView(top)
+
+            val icon = text(
+                symbolFor(pair.first),
+                22f, true, green
+            ).apply {
+                gravity = Gravity.CENTER
+                background = shape(mint, 10)
+            }
+
+            top.addView(
+                icon,
+                LinearLayout.LayoutParams(dp(36), dp(36))
             )
 
-            row.addView(c, lp)
+            top.addView(
+                text(pair.first, 13f, true, muted).apply {
+                    setPadding(dp(8), 0, 0, 0)
+                },
+                LinearLayout.LayoutParams(0, -2, 1f)
+            )
 
             c.addView(
-                label(k, 12f, false, muted)
+                text(pair.second, 28f, true, green),
+                LinearLayout.LayoutParams(-1, -2).apply {
+                    topMargin = dp(9)
+                }
             )
-
-            val valText = label(
-                v,
-                25f,
-                true,
-                green
-            )
-
-            val vlp = LinearLayout.LayoutParams(-1, -2)
-            vlp.topMargin = dp(6)
-
-            c.addView(valText, vlp)
         }
     }
 
-    // =========================================
-    // 5. DASHBOARD ADMIN
-    // =========================================
-
     private fun dashboard() {
-
         val rooms = MotelRepository.rooms
-
-        metricRow(
-            "Nhà trọ" to AdminStore.properties.size.toString(),
-            "Tài khoản" to AdminStore.users.size.toString()
-        )
-
-        metricRow(
-            "Phòng trọ mẫu" to rooms.size.toString(),
-            "Đang thuê" to rooms.count {
-                it.status != "EMPTY"
-            }.toString()
-        )
 
         val gross = rooms.sumOf {
             it.totalBill(
@@ -722,53 +768,122 @@ class AdminHomeActivity : AppCompatActivity() {
                 )
             }
 
-        val c = box(body)
+        val welcome = card(body, 18).apply {
+            background = shape(mint, 18)
+        }
 
-        c.addView(
-            label(
-                "Tổng hóa đơn tính thử",
-                13f,
-                true,
-                green
-            )
-        )
-
-        c.addView(
-            label(
-                price(gross),
-                24f,
-                true
+        welcome.addView(
+            text(
+                "Xin chào, Quản trị viên! 👋",
+                20f, true, green
             )
         )
 
         paragraph(
-            c,
-            "Đã đánh dấu thu: ${price(paid)} · " +
-                    "Chưa thu: ${price(gross - paid)}"
+            welcome,
+            "Theo dõi hoạt động nhà trọ và quản lý người dùng."
+        )
+
+        heading("Tổng quan hoạt động")
+
+        metricRow(
+            "Nhà trọ" to
+                    AdminStore.properties.size.toString(),
+            "Tài khoản" to
+                    AdminStore.users.size.toString()
+        )
+
+        metricRow(
+            "Phòng trọ mẫu" to rooms.size.toString(),
+            "Đang thuê" to rooms.count {
+                it.status != "EMPTY"
+            }.toString()
+        )
+
+        val revenue = card(body, 18)
+
+        revenue.addView(
+            text(
+                "TỔNG HÓA ĐƠN TÍNH THỬ",
+                14f, true, muted
+            )
+        )
+
+        revenue.addView(
+            text(price(gross), 27f, true, green),
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(7)
+                bottomMargin = dp(7)
+            }
+        )
+
+        val percent = if (gross > 0L) {
+            (paid.toDouble() / gross * 100)
+                .toInt().coerceIn(0, 100)
+        } else {
+            0
+        }
+
+        val progress = ProgressBar(
+            this,
+            null,
+            android.R.attr.progressBarStyleHorizontal
+        ).apply {
+            max = 100
+            this.progress = percent
+
+            progressTintList =
+                ColorStateList.valueOf(green)
+
+            progressBackgroundTintList =
+                ColorStateList.valueOf(mint)
+        }
+
+        revenue.addView(
+            progress,
+            LinearLayout.LayoutParams(-1, dp(9)).apply {
+                topMargin = dp(7)
+                bottomMargin = dp(7)
+            }
+        )
+
+        paragraph(
+            revenue,
+            "Đã đánh dấu thu: ${price(paid)}"
+        )
+
+        paragraph(
+            revenue,
+            "Chưa thu: ${price(gross - paid)}"
         )
 
         heading("Cần chú ý")
 
-        entry(
-            body,
-            "Hóa đơn chưa thanh toán",
-            "${rooms.count {
-                it.status == "PENDING" ||
-                        it.status == "OVERDUE"
-            }} phòng chưa đóng",
-            "Xem chi tiết"
-        ) {
-            route("invoices")
+        val unpaid = rooms.count {
+            it.status == "PENDING" ||
+                    it.status == "OVERDUE"
         }
 
         entry(
             body,
-            "Yêu cầu sửa chữa",
-            "${MotelRepository.maintenanceList.count {
-                it.status != "DONE"
-            }} yêu cầu chưa hoàn tất"
+            "Hóa đơn chưa thanh toán",
+            "$unpaid phòng chưa đóng",
+            "Xem chi tiết"
         ) {
-            route("maintenance")
+            show("invoices")
+        }
+
+        val repairing =
+            MotelRepository.maintenanceList.count {
+                it.status != "DONE"
+            }
+
+        entry(
+            body,
+            "Yêu cầu sửa chữa",
+            "$repairing yêu cầu chưa hoàn tất"
+        ) {
+            show("maintenance")
         }
 
         heading("Truy cập nhanh")
@@ -778,234 +893,215 @@ class AdminHomeActivity : AppCompatActivity() {
             "Quản lý nhà trọ" to "properties",
             "Thống kê doanh thu" to "reports",
             "Thông báo" to "notifications"
-        ).forEach { (t, p) ->
-            shortAction(body, "› $t") {
-                route(p)
-            }
-        }
-    }
-
-    // =========================================
-    // 6. THÔNG BÁO
-    // =========================================
-
-    private fun notifications() {
-
-        entry(
-            body,
-            "Bảo trì chưa hoàn thành",
-            "${MotelRepository.maintenanceList.count {
-                it.status != "DONE"
-            }} yêu cầu cần theo dõi",
-            "Bảo trì"
-        ) {
-            route("maintenance")
-        }
-
-        entry(
-            body,
-            "Hóa đơn quá hạn",
-            "${MotelRepository.rooms.count {
-                it.status == "OVERDUE"
-            }} phòng có công nợ",
-            "Hóa đơn"
-        ) {
-            route("invoices")
-        }
-
-        entry(
-            body,
-            "Hệ thống đang ở chế độ Demo",
-            "Chưa có dịch vụ thông báo đẩy hoặc email thật"
-        ) {
-            info(
-                "Tính năng thông báo đẩy sẽ cần " +
-                        "Firebase Cloud Messaging hoặc backend."
-            )
-        }
-    }
-
-    // =========================================
-    // 7. DANH SÁCH TÀI KHOẢN
-    // =========================================
-
-    private fun accounts() {
-
-        action(body, "+ THÊM TÀI KHOẢN") {
-            editing = false
-            route("accountForm")
-        }
-
-        val results = ll()
-        body.addView(results)
-
-        fun refresh(q: String) {
-
-            results.removeAllViews()
-
-            AdminStore.users.filter {
-                it.name.contains(q, true) ||
-                        it.email.contains(q, true) ||
-                        it.role.contains(q, true)
-            }.forEach { u ->
-
-                entry(
-                    results,
-                    u.name,
-                    "${u.role} · ${u.email}",
-                    if (u.active) "Hoạt động" else "Đã khóa"
-                ) {
-                    userId = u.id
-                    route("accountDetail")
-                }
-            }
-        }
-
-        search {
-            refresh(it)
-        }
-
-        refresh("")
-    }
-
-    private fun selectedUser(): AdminUser? {
-        return AdminStore.users.firstOrNull {
-            it.id == userId
-        }
-    }
-
-    // =========================================
-    // 8. CHI TIẾT TÀI KHOẢN
-    // =========================================
-
-    private fun accountDetail() {
-
-        val u = selectedUser() ?: return empty()
-
-        val c = box(body)
-
-        c.addView(
-            label(u.name, 20f, true)
-        )
-
-        paragraph(
-            c,
-            "Mã: ${u.id}\n" +
-                    "Email: ${u.email}\n" +
-                    "SĐT: ${u.phone}\n" +
-                    "Vai trò: ${u.role}\n" +
-                    "Trạng thái: ${
-                        if (u.active) "Hoạt động" else "Đã khóa"
-                    }"
-        )
-
-        action(body, "CHỈNH SỬA TÀI KHOẢN") {
-            editing = true
-            route("accountForm")
-        }
-
-        if (u.role != "ADMIN") {
-
-            shortAction(
+        ).forEach { (name, destination) ->
+            entry(
                 body,
-                if (u.active) {
-                    "KHÓA TÀI KHOẢN"
-                } else {
-                    "MỞ KHÓA TÀI KHOẢN"
-                }
+                name,
+                "Nhấn để mở chức năng"
             ) {
-                route("accountLock")
+                show(destination)
             }
         }
     }
+    private fun accounts() {
+        val results = layout()
 
-    // =========================================
-    // 9. THÊM / SỬA TÀI KHOẢN
-    // =========================================
+        search(body) { keyword ->
+            results.removeAllViews()
+            renderAccounts(results, keyword)
+        }
 
-    private fun accountForm() {
+        button(body, "+  THÊM TÀI KHOẢN") {
+            editing = false
+            show("accountForm")
+        }
 
-        val u = if (editing) selectedUser() else null
+        heading("Danh sách tài khoản (${AdminStore.users.size})")
 
-        val name = edit(
-            body,
-            "Họ tên",
-            u?.name ?: ""
-        )
+        body.addView(results)
+        renderAccounts(results, "")
+    }
 
-        val email = edit(
-            body,
-            "Email",
-            u?.email ?: ""
-        )
+    private fun renderAccounts(
+        container: LinearLayout,
+        keyword: String
+    ) {
+        val items = AdminStore.users.filter {
+            it.name.contains(keyword, true) ||
+                    it.email.contains(keyword, true) ||
+                    it.role.contains(keyword, true) ||
+                    it.phone.contains(keyword, true)
+        }
 
-        val phone = edit(
-            body,
-            "Số điện thoại",
-            u?.phone ?: ""
-        )
-
-        body.addView(
-            label("Vai trò", 12f, true, muted)
-        )
-
-        val roles = listOf(
-            "CHU_TRO",
-            "KHACH_THUE"
-        )
-
-        val spin = Spinner(this)
-
-        spin.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            roles
-        )
-
-        spin.setSelection(
-            roles.indexOf(u?.role).coerceAtLeast(0)
-        )
-
-        body.addView(spin)
-
-        if (u?.role == "ADMIN") {
-            info(
-                "Không chỉnh sửa quyền ADMIN " +
-                        "bằng biểu mẫu demo."
+        if (items.isEmpty()) {
+            val c = card(container)
+            c.addView(
+                text("Không tìm thấy tài khoản", 17f, true)
             )
-            route("accounts")
+            paragraph(c, "Hãy thử từ khóa khác.")
             return
         }
 
-        action(body, "LƯU TÀI KHOẢN") {
+        items.forEach { user ->
+            val role = when (user.role) {
+                "ADMIN" -> "QUẢN TRỊ VIÊN"
+                "CHU_TRO" -> "CHỦ TRỌ"
+                "KHACH_THUE" -> "KHÁCH THUÊ"
+                else -> user.role
+            }
 
+            entry(
+                container,
+                user.name,
+                "$role · ${user.email}",
+                if (user.active) "Hoạt động" else "Đã khóa"
+            ) {
+                userId = user.id
+                show("accountDetail")
+            }
+        }
+    }
+
+    private fun selectedUser(): AdminUser? =
+        AdminStore.users.firstOrNull {
+            it.id == userId
+        }
+
+    private fun accountDetail() {
+        val user = selectedUser() ?: return empty()
+
+        val c = card(body, 18)
+
+        val row = layout(true).apply {
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        c.addView(row)
+
+        row.addView(
+            text("♙", 28f, true, green).apply {
+                gravity = Gravity.CENTER
+                background = shape(mint, 18)
+            },
+            LinearLayout.LayoutParams(dp(60), dp(60))
+        )
+
+        val names = layout().apply {
+            setPadding(dp(13), 0, 0, 0)
+        }
+        row.addView(
+            names,
+            LinearLayout.LayoutParams(0, -2, 1f)
+        )
+
+        names.addView(text(user.name, 21f, true))
+        paragraph(names, user.role)
+
+        c.addView(
+            chip(
+                if (user.active) "Hoạt động" else "Đã khóa",
+                user.active
+            ),
+            LinearLayout.LayoutParams(-2, -2).apply {
+                topMargin = dp(16)
+                bottomMargin = dp(9)
+            }
+        )
+
+        detailRow(c, "Mã tài khoản", user.id)
+        detailRow(c, "Email", user.email)
+        detailRow(c, "Số điện thoại", user.phone)
+        detailRow(c, "Vai trò", user.role)
+
+        if (user.role != "ADMIN") {
+            button(body, "CHỈNH SỬA TÀI KHOẢN") {
+                editing = true
+                show("accountForm")
+            }
+
+            button(
+                body,
+                if (user.active) {
+                    "KHÓA TÀI KHOẢN"
+                } else {
+                    "MỞ KHÓA TÀI KHOẢN"
+                },
+                true
+            ) {
+                show("accountLock")
+            }
+        } else {
+            val note = card(body)
+            paragraph(
+                note,
+                "Tài khoản ADMIN không thể chỉnh sửa " +
+                        "quyền bằng biểu mẫu demo."
+            )
+        }
+    }
+
+    private fun accountForm() {
+        val user = if (editing) selectedUser() else null
+
+        if (user?.role == "ADMIN") {
+            info("Không chỉnh sửa quyền ADMIN trong bản demo.")
+            show("accounts")
+            return
+        }
+
+        val name = input(body, "Họ tên", user?.name ?: "")
+        val email = input(body, "Email", user?.email ?: "")
+        val phone = input(
+            body,
+            "Số điện thoại",
+            user?.phone ?: ""
+        )
+
+        body.addView(
+            text("Vai trò", 15f, true, muted)
+        )
+
+        val roles = listOf("CHU_TRO", "KHACH_THUE")
+
+        val spinner = Spinner(this).apply {
+            adapter = ArrayAdapter(
+                this@AdminHomeActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                roles
+            )
+            setSelection(
+                roles.indexOf(user?.role).coerceAtLeast(0)
+            )
+        }
+
+        body.addView(spinner)
+
+        button(body, "LƯU TÀI KHOẢN") {
             val n = name.text.toString().trim()
             val e = email.text.toString().trim()
             val p = phone.text.toString().trim()
 
             if (n.length < 2) {
-                name.error = "Nhập ít nhất 2 ký tự"
-                return@action
+                name.error = "Họ tên tối thiểu 2 ký tự"
+                return@button
             }
 
             if (!android.util.Patterns.EMAIL_ADDRESS
                     .matcher(e).matches()
             ) {
                 email.error = "Email không hợp lệ"
-                return@action
+                return@button
             }
 
             if (AdminStore.users.any {
                     it.email.equals(e, true) &&
-                            it.id != u?.id
+                            it.id != user?.id
                 }
             ) {
                 email.error = "Email đã tồn tại"
-                return@action
+                return@button
             }
 
-            if (u == null) {
-
+            if (user == null) {
                 AdminStore.users.add(
                     AdminUser(
                         "U" + System.currentTimeMillis()
@@ -1013,192 +1109,163 @@ class AdminHomeActivity : AppCompatActivity() {
                         n,
                         e,
                         p,
-                        roles[spin.selectedItemPosition]
+                        roles[spinner.selectedItemPosition]
                     )
                 )
-
             } else {
-                u.name = n
-                u.email = e
-                u.phone = p
-                u.role = roles[spin.selectedItemPosition]
+                user.name = n
+                user.email = e
+                user.phone = p
+                user.role = roles[spinner.selectedItemPosition]
             }
 
             AdminStore.save(this)
-
-            finishAction(
-                "Đã lưu tài khoản",
-                "accounts"
-            )
+            finishAction("Đã lưu tài khoản", "accounts")
         }
     }
 
-    // =========================================
-    // 10. KHÓA / MỞ KHÓA TÀI KHOẢN
-    // =========================================
-
     private fun accountLock() {
+        val user = selectedUser() ?: return empty()
 
-        val u = selectedUser() ?: return empty()
-
-        val desc = if (u.active) {
-            "khóa"
-        } else {
-            "mở khóa"
+        if (user.role == "ADMIN") {
+            info("Không thể khóa tài khoản ADMIN.")
+            show("accounts")
+            return
         }
 
-        val c = box(body)
+        val actionName =
+            if (user.active) "khóa" else "mở khóa"
 
+        val c = card(body)
         c.addView(
-            label(
-                "Bạn có muốn $desc tài khoản ${u.name}?",
-                16f,
-                true
+            text(
+                "Bạn muốn $actionName tài khoản ${user.name}?",
+                18f, true
             )
         )
-
         paragraph(
             c,
-            "Dữ liệu được giữ nguyên, " +
-                    "chỉ thay đổi trạng thái."
+            "Dữ liệu được giữ nguyên, chỉ thay đổi trạng thái."
         )
 
-        action(
-            body,
-            "XÁC NHẬN ${desc.uppercase()}"
-        ) {
-            confirm(
-                "Xác nhận $desc ${u.name}?"
-            ) {
-                u.active = !u.active
-
+        button(body, "XÁC NHẬN ${actionName.uppercase()}") {
+            confirm("Xác nhận $actionName ${user.name}?") {
+                user.active = !user.active
                 AdminStore.save(this)
-
                 finishAction(
-                    "Đã $desc tài khoản",
+                    "Đã $actionName tài khoản",
                     "accountDetail"
                 )
             }
         }
 
-        shortAction(body, "HỦY") {
-            route("accountDetail")
+        button(body, "HỦY", true) {
+            show("accountDetail")
         }
     }
-
-    // =========================================
-    // 11. DANH SÁCH NHÀ TRỌ
-    // =========================================
-
-    private fun properties() {
-
-        action(body, "+ THÊM NHÀ TRỌ") {
-            editing = false
-            route("propertyForm")
-        }
-
-        val list = ll()
-        body.addView(list)
-
-        fun refresh(q: String) {
-
-            list.removeAllViews()
-
-            AdminStore.properties.filter {
-                it.name.contains(q, true) ||
-                        it.address.contains(q, true)
-            }.forEach { p ->
-
-                entry(
-                    list,
-                    p.name,
-                    "${p.id} · ${p.address}",
-                    if (p.active) {
-                        "Hoạt động"
-                    } else {
-                        "Tạm ngừng"
-                    }
-                ) {
-                    propertyId = p.id
-                    route("propertyDetail")
-                }
-            }
-        }
-
-        search {
-            refresh(it)
-        }
-
-        refresh("")
-    }
-
-    private fun selectedProperty(): AdminProperty? {
-        return AdminStore.properties.firstOrNull {
+    private fun selectedProperty(): AdminProperty? =
+        AdminStore.properties.firstOrNull {
             it.id == propertyId
         }
+
+    private fun properties() {
+        val results = layout()
+
+        search(body) { keyword ->
+            results.removeAllViews()
+            renderProperties(results, keyword)
+        }
+
+        button(body, "+  THÊM NHÀ TRỌ") {
+            editing = false
+            show("propertyForm")
+        }
+
+        heading("Danh sách nhà trọ")
+        body.addView(results)
+        renderProperties(results, "")
     }
 
-    // =========================================
-    // 12. CHI TIẾT NHÀ TRỌ
-    // =========================================
+    private fun renderProperties(
+        container: LinearLayout,
+        keyword: String
+    ) {
+        val items = AdminStore.properties.filter {
+            it.name.contains(keyword, true) ||
+                    it.address.contains(keyword, true)
+        }
+
+        if (items.isEmpty()) {
+            entry(
+                container,
+                "Không tìm thấy nhà trọ",
+                "Hãy thử từ khóa khác"
+            ) {}
+        }
+
+        items.forEach { property ->
+            entry(
+                container,
+                property.name,
+                "${property.id} · ${property.address}",
+                if (property.active) {
+                    "Hoạt động"
+                } else {
+                    "Tạm ngừng"
+                }
+            ) {
+                propertyId = property.id
+                show("propertyDetail")
+            }
+        }
+    }
 
     private fun propertyDetail() {
-
-        val p = selectedProperty() ?: return empty()
+        val property = selectedProperty() ?: return empty()
 
         val owner = AdminStore.users.firstOrNull {
-            it.id == p.ownerId
+            it.id == property.ownerId
         }?.name ?: "Chưa phân công"
 
-        val c = box(body)
-
-        c.addView(
-            label(p.name, 20f, true)
-        )
-
-        paragraph(
+        val c = card(body)
+        c.addView(text(property.name, 21f, true))
+        detailRow(c, "Mã nhà trọ", property.id)
+        detailRow(c, "Địa chỉ", property.address)
+        detailRow(c, "Chủ trọ", owner)
+        detailRow(
             c,
-            "Mã: ${p.id}\n" +
-                    "Địa chỉ: ${p.address}\n" +
-                    "Chủ trọ: $owner\n" +
-                    "Trạng thái: ${
-                        if (p.active) "Hoạt động" else "Tạm ngừng"
-                    }"
+            "Trạng thái",
+            if (property.active) "Hoạt động" else "Tạm ngừng"
         )
 
         paragraph(
             body,
-            "Lưu ý: danh sách phòng trong MotelRepository " +
-                    "hiện chỉ thuộc nhà trọ mẫu NT001."
+            "Dữ liệu phòng hiện tại thuộc nhà trọ mẫu NT001."
         )
 
-        action(body, "SỬA THÔNG TIN") {
+        button(body, "SỬA THÔNG TIN") {
             editing = true
-            route("propertyForm")
+            show("propertyForm")
         }
 
-        if (p.id == "NT001") {
-
-            shortAction(body, "XEM PHÒNG") {
-                route("rooms")
+        if (property.id == "NT001") {
+            button(body, "XEM PHÒNG", true) {
+                show("rooms")
             }
 
-            shortAction(body, "XEM KHÁCH THUÊ") {
-                route("tenants")
+            button(body, "XEM KHÁCH THUÊ", true) {
+                show("tenants")
             }
         }
 
-        shortAction(
+        button(
             body,
-            if (p.active) "TẠM NGỪNG" else "KÍCH HOẠT"
+            if (property.active) "TẠM NGỪNG" else "KÍCH HOẠT",
+            true
         ) {
-            confirm(
-                "Đổi trạng thái nhà trọ?"
-            ) {
-                p.active = !p.active
-
+            confirm("Bạn muốn đổi trạng thái nhà trọ?") {
+                property.active = !property.active
                 AdminStore.save(this)
-
                 finishAction(
                     "Đã cập nhật nhà trọ",
                     "properties"
@@ -1207,441 +1274,342 @@ class AdminHomeActivity : AppCompatActivity() {
         }
     }
 
-    // =========================================
-    // 13. THÊM / SỬA NHÀ TRỌ
-    // =========================================
-
     private fun propertyForm() {
+        val property =
+            if (editing) selectedProperty() else null
 
-        val p = if (editing) selectedProperty() else null
-
-        val name = edit(
+        val name = input(
             body,
             "Tên nhà trọ",
-            p?.name ?: ""
+            property?.name ?: ""
         )
 
-        val address = edit(
+        val address = input(
             body,
             "Địa chỉ",
-            p?.address ?: ""
+            property?.address ?: ""
         )
 
         body.addView(
-            label(
-                "Chủ trọ phụ trách",
-                12f,
-                true,
-                muted
-            )
+            text("Chủ trọ phụ trách", 15f, true, muted)
         )
 
         val owners = AdminStore.users.filter {
             it.role == "CHU_TRO" && it.active
         }
 
-        val names = owners.map {
-            it.name
+        val spinner = Spinner(this).apply {
+            adapter = ArrayAdapter(
+                this@AdminHomeActivity,
+                android.R.layout.simple_spinner_dropdown_item,
+                owners.map { it.name }.ifEmpty {
+                    listOf("Chưa có chủ trọ")
+                }
+            )
+            setSelection(
+                owners.indexOfFirst {
+                    it.id == property?.ownerId
+                }.coerceAtLeast(0)
+            )
         }
 
-        val spin = Spinner(this)
+        body.addView(spinner)
 
-        spin.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            names.ifEmpty {
-                listOf("Chưa có chủ trọ")
-            }
-        )
+        button(body, "LƯU NHÀ TRỌ") {
+            val n = name.text.toString().trim()
+            val a = address.text.toString().trim()
 
-        spin.setSelection(
-            owners.indexOfFirst {
-                it.id == p?.ownerId
-            }.coerceAtLeast(0)
-        )
-
-        body.addView(spin)
-
-        action(body, "LƯU NHÀ TRỌ") {
-
-            if (name.text.toString().trim().length < 3) {
-                name.error =
-                    "Tên nhà trọ ít nhất 3 ký tự"
-                return@action
+            if (n.length < 3) {
+                name.error = "Tên tối thiểu 3 ký tự"
+                return@button
             }
 
-            if (address.text.toString().isBlank()) {
-                address.error =
-                    "Vui lòng nhập địa chỉ"
-                return@action
+            if (a.isEmpty()) {
+                address.error = "Vui lòng nhập địa chỉ"
+                return@button
             }
 
             if (owners.isEmpty()) {
-                info(
-                    "Hãy tạo tài khoản Chủ trọ trước."
-                )
-                return@action
+                info("Bạn cần tạo tài khoản Chủ trọ trước.")
+                return@button
             }
 
-            val owner = owners[
-                spin.selectedItemPosition
-            ].id
+            val ownerId =
+                owners[spinner.selectedItemPosition].id
 
-            if (p == null) {
-
+            if (property == null) {
                 AdminStore.properties.add(
                     AdminProperty(
                         "NT" + System.currentTimeMillis()
                             .toString().takeLast(7),
-                        name.text.toString().trim(),
-                        address.text.toString().trim(),
-                        owner
+                        n,
+                        a,
+                        ownerId
                     )
                 )
-
             } else {
-
-                p.name = name.text.toString().trim()
-                p.address = address.text.toString().trim()
-                p.ownerId = owner
+                property.name = n
+                property.address = a
+                property.ownerId = ownerId
             }
 
             AdminStore.save(this)
-
-            finishAction(
-                "Đã lưu nhà trọ",
-                "properties"
-            )
+            finishAction("Đã lưu nhà trọ", "properties")
         }
     }
-
-    // =========================================
-    // 14. GIÁM SÁT PHÒNG TRỌ
-    // =========================================
-
     private fun rooms() {
-
         paragraph(
             body,
-            "Dữ liệu các phòng thuộc nhà trọ mẫu NT001, " +
-                    "lấy trực tiếp từ MotelRepository."
+            "Dữ liệu phòng mẫu lấy từ MotelRepository."
         )
 
-        val result = ll()
-        body.addView(result)
+        val results = layout()
 
-        fun refresh(q: String) {
-
-            result.removeAllViews()
-
-            MotelRepository.rooms.filter {
-                it.roomNumber.contains(q, true) ||
-                        it.tenantName.contains(q, true)
-            }.forEach { r ->
-
-                entry(
-                    result,
-                    "Phòng ${r.roomNumber}",
-                    "Tầng ${r.floor} · " +
-                            "${price(r.roomRent)}/tháng · " +
-                            r.tenantName,
-                    r.status
-                ) {
-                    roomId = r.roomNumber
-                    route("invoiceDetail")
-                }
-            }
+        search(body) { q ->
+            results.removeAllViews()
+            renderRooms(results, q)
         }
 
-        search {
-            refresh(it)
-        }
-
-        refresh("")
+        body.addView(results)
+        renderRooms(results, "")
     }
 
-    // =========================================
-    // 15. TRA CỨU KHÁCH THUÊ
-    // =========================================
+    private fun renderRooms(
+        container: LinearLayout,
+        keyword: String
+    ) {
+        val items = MotelRepository.rooms.filter {
+            it.roomNumber.contains(keyword, true) ||
+                    it.tenantName.contains(keyword, true)
+        }
+
+        items.forEach { room ->
+            entry(
+                container,
+                "Phòng ${room.roomNumber}",
+                "Tầng ${room.floor} · " +
+                        "${price(room.roomRent)}/tháng · " +
+                        room.tenantName,
+                room.status
+            ) {
+                roomId = room.roomNumber
+                show("invoiceDetail")
+            }
+        }
+    }
 
     private fun tenants() {
+        val results = layout()
 
         paragraph(
             body,
-            "Chỉ xem người thuê của các phòng mẫu; " +
-                    "không công khai CCCD trong màn hình tổng quan."
+            "Danh sách khách thuê từ các phòng mẫu."
         )
 
-        val result = ll()
-        body.addView(result)
-
-        fun refresh(q: String) {
-
-            result.removeAllViews()
-
-            MotelRepository.rooms.filter {
-                it.status != "EMPTY" &&
-                        (
-                                it.tenantName.contains(q, true) ||
-                                        it.roomNumber.contains(q, true)
-                                )
-            }.forEach { r ->
-
-                entry(
-                    result,
-                    r.tenantName,
-                    "Phòng ${r.roomNumber} · ${r.tenantPhone}",
-                    "Đang thuê"
-                ) {
-                    roomId = r.roomNumber
-                    route("invoiceDetail")
-                }
-            }
+        search(body) { q ->
+            results.removeAllViews()
+            renderTenants(results, q)
         }
 
-        search {
-            refresh(it)
-        }
-
-        refresh("")
+        body.addView(results)
+        renderTenants(results, "")
     }
 
-    // =========================================
-    // 16. DANH SÁCH HÓA ĐƠN
-    // =========================================
+    private fun renderTenants(
+        container: LinearLayout,
+        keyword: String
+    ) {
+        MotelRepository.rooms.filter {
+            it.status != "EMPTY" &&
+                    (
+                            it.tenantName.contains(keyword, true) ||
+                                    it.roomNumber.contains(keyword, true)
+                            )
+        }.forEach { room ->
+            entry(
+                container,
+                room.tenantName,
+                "Phòng ${room.roomNumber} · ${room.tenantPhone}",
+                "Đang thuê"
+            ) {
+                roomId = room.roomNumber
+                show("invoiceDetail")
+            }
+        }
+    }
 
     private fun invoices() {
-
         paragraph(
             body,
-            "Hóa đơn tính từ giá thuê và số điện nước hiện có. " +
-                    "Chưa có bảng hóa đơn lưu theo kỳ."
+            "Hóa đơn được tính từ dữ liệu phòng mẫu, " +
+                    "chưa phải lịch sử hóa đơn theo kỳ."
         )
-
-        val list = ll()
-        body.addView(list)
-
-        fun refresh(q: String) {
-
-            list.removeAllViews()
-
-            MotelRepository.rooms.filter {
-                it.status != "EMPTY" &&
-                        it.roomNumber.contains(q, true)
-            }.forEach { r ->
-
-                val total = r.totalBill(
-                    MotelRepository.electricPrice,
-                    MotelRepository.waterPrice,
-                    MotelRepository.serviceFee
-                )
-
-                entry(
-                    list,
-                    "Hóa đơn phòng ${r.roomNumber}",
-                    "${r.tenantName} · ${price(total)}",
-                    r.status
-                ) {
-                    roomId = r.roomNumber
-                    route("invoiceDetail")
-                }
+        val results = layout()
+        search(body) { q ->
+            results.removeAllViews()
+            renderInvoices(results, q)
+        }
+        body.addView(results)
+        renderInvoices(results, "")
+    }
+    private fun renderInvoices(
+        container: LinearLayout,
+        keyword: String
+    ) {
+        MotelRepository.rooms.filter {
+            it.status != "EMPTY" &&
+                    it.roomNumber.contains(keyword, true)
+        }.forEach { room ->
+            val amount = room.totalBill(
+                MotelRepository.electricPrice,
+                MotelRepository.waterPrice,
+                MotelRepository.serviceFee
+            )
+            entry(
+                container,
+                "Hóa đơn phòng ${room.roomNumber}",
+                "${room.tenantName} · ${price(amount)}",
+                room.status
+            ) {
+                roomId = room.roomNumber
+                show("invoiceDetail")
             }
         }
-
-        search {
-            refresh(it)
-        }
-
-        refresh("")
     }
-
-    // =========================================
-    // 17. CHI TIẾT HÓA ĐƠN
-    // =========================================
-
     private fun invoiceDetail() {
-
-        val r = MotelRepository.rooms.firstOrNull {
+        val room = MotelRepository.rooms.firstOrNull {
             it.roomNumber == roomId
-        } ?: MotelRepository.rooms.firstOrNull()
-        ?: return empty()
-
-        val c = box(body)
-
+        } ?: return empty()
+        val total = room.totalBill(
+            MotelRepository.electricPrice,
+            MotelRepository.waterPrice,
+            MotelRepository.serviceFee
+        )
+        val c = card(body)
         c.addView(
-            label(
-                "Phòng ${r.roomNumber} · ${r.tenantName}",
-                17f,
-                true
+            text(
+                "Phòng ${room.roomNumber}",
+                21f, true
             )
         )
-
+        paragraph(c, room.tenantName)
+        detailRow(c, "Tiền phòng", price(room.roomRent))
+        detailRow(c, "Điện sử dụng", "${room.electricUsed} kWh")
+        detailRow(c, "Nước sử dụng", "${room.waterUsed} m³")
+        detailRow(
+            c,
+            "Giá điện",
+            price(MotelRepository.electricPrice)
+        )
+        detailRow(
+            c,
+            "Giá nước",
+            price(MotelRepository.waterPrice)
+        )
+        detailRow(
+            c,
+            "Phí dịch vụ",
+            price(MotelRepository.serviceFee)
+        )
+        c.addView(
+            text(
+                "Tổng cộng: ${price(total)}",
+                23f, true, green
+            ),
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(17)
+            }
+        )
         paragraph(
             c,
-            "Tiền phòng: ${price(r.roomRent)}\n" +
-                    "Điện: ${r.electricUsed} kWh × " +
-                    "${price(MotelRepository.electricPrice)}\n" +
-                    "Nước: ${r.waterUsed} m³ × " +
-                    "${price(MotelRepository.waterPrice)}\n" +
-                    "Dịch vụ: ${price(MotelRepository.serviceFee)}"
+            "Trạng thái: ${room.status}"
         )
-
-        c.addView(
-            label(
-                "Tổng: ${
-                    price(
-                        r.totalBill(
-                            MotelRepository.electricPrice,
-                            MotelRepository.waterPrice,
-                            MotelRepository.serviceFee
-                        )
-                    )
-                }",
-                21f,
-                true,
-                green
-            )
-        )
-
-        paragraph(
-            c,
-            "Trạng thái: ${r.status}. " +
-                    "Admin chỉ giám sát, không tự ý xác nhận thanh toán."
-        )
-
-        action(body, "YÊU CẦU ĐỐI SOÁT") {
-
-            info(
-                "Đã ghi nhận yêu cầu đối soát demo. " +
-                        "Chưa gửi thông báo cho chủ trọ " +
-                        "vì chưa có máy chủ."
-            )
-
+        button(body, "YÊU CẦU ĐỐI SOÁT") {
             AdminStore.writeAudit(
                 this,
-                "Xem đối soát phòng ${r.roomNumber}"
+                "Xem đối soát phòng ${room.roomNumber}"
+            )
+            info(
+                "Đã ghi nhận yêu cầu đối soát demo. " +
+                        "Chưa gửi yêu cầu lên máy chủ."
             )
         }
     }
-
-    // =========================================
-    // 18. DANH SÁCH BẢO TRÌ
-    // =========================================
-
     private fun maintenance() {
-
-        val list = ll()
-        body.addView(list)
-
-        fun refresh(q: String) {
-
-            list.removeAllViews()
-
-            MotelRepository.maintenanceList.filter {
-                it.title.contains(q, true) ||
-                        it.roomNumber.contains(q, true)
-            }.forEach { m ->
-
-                entry(
-                    list,
-                    "Phòng ${m.roomNumber} · ${m.title}",
-                    "${m.category} · ${m.dateSent}",
-                    m.status
-                ) {
-                    maintenanceId = m.id
-                    route("maintenanceDetail")
-                }
+        val results = layout()
+        search(body) { q ->
+            results.removeAllViews()
+            renderMaintenance(results, q)
+        }
+        body.addView(results)
+        renderMaintenance(results, "")
+    }
+    private fun renderMaintenance(
+        container: LinearLayout,
+        keyword: String
+    ) {
+        MotelRepository.maintenanceList.filter {
+            it.title.contains(keyword, true) ||
+                    it.roomNumber.contains(keyword, true)
+        }.forEach { item ->
+            entry(
+                container,
+                "Phòng ${item.roomNumber} · ${item.title}",
+                "${item.category} · ${item.dateSent}",
+                item.status
+            ) {
+                maintenanceId = item.id
+                show("maintenanceDetail")
             }
         }
-
-        search {
-            refresh(it)
-        }
-
-        refresh("")
     }
-
-    // =========================================
-    // 19. CHI TIẾT BẢO TRÌ
-    // =========================================
-
     private fun maintenanceDetail() {
-
-        val m = MotelRepository.maintenanceList.firstOrNull {
-            it.id == maintenanceId
-        } ?: return empty()
-
-        val c = box(body)
-
-        c.addView(
-            label(m.title, 19f, true)
-        )
-
-        paragraph(
-            c,
-            "Phòng: ${m.roomNumber}\n" +
-                    "Danh mục: ${m.category}\n" +
-                    "Nội dung: ${m.description}\n" +
-                    "Ngày gửi: ${m.dateSent}\n" +
-                    "Trạng thái: ${m.status}"
-        )
-
-        body.addView(
-            label(
-                "Cập nhật tiến độ (Demo)",
-                13f,
-                true,
-                green
-            )
-        )
-
+        val item =
+            MotelRepository.maintenanceList.firstOrNull {
+                it.id == maintenanceId
+            } ?: return empty()
+        val c = card(body)
+        c.addView(text(item.title, 21f, true))
+        detailRow(c, "Phòng", item.roomNumber)
+        detailRow(c, "Danh mục", item.category)
+        detailRow(c, "Ngày gửi", item.dateSent)
+        detailRow(c, "Trạng thái", item.status)
+        paragraph(c, item.description)
+        heading("Cập nhật tiến độ (Demo)")
         listOf(
             "NEW" to "Mới",
             "FIXING" to "Đang sửa",
             "DONE" to "Hoàn thành"
-        ).forEach { (s, t) ->
-
-            shortAction(body, t) {
-
+        ).forEach { (status, name) ->
+            button(body, name, true) {
                 confirm(
-                    "Đổi trạng thái bảo trì thành '$t'?"
+                    "Đổi trạng thái bảo trì thành '$name'?"
                 ) {
-                    m.status = s
-
+                    item.status = status
                     MotelRepository.save(this)
-
                     finishAction(
-                        "Đã cập nhật bảo trì ${m.id}",
+                        "Đã cập nhật bảo trì ${item.id}",
                         "maintenance"
                     )
                 }
             }
         }
     }
-
-    // =========================================
-    // 20. BÁO CÁO THỐNG KÊ
-    // =========================================
-
     private fun reports() {
-
         val rooms = MotelRepository.rooms
-
         val occupied = rooms.count {
             it.status != "EMPTY"
         }
-
         val percent = if (rooms.isEmpty()) {
             0
         } else {
             occupied * 100 / rooms.size
         }
-
         metricRow(
             "Tỷ lệ lấp đầy" to "$percent%",
-            "Số nhà trọ" to AdminStore.properties.size.toString()
+            "Số nhà trọ" to
+                    AdminStore.properties.size.toString()
         )
-
         val total = rooms.sumOf {
             it.totalBill(
                 MotelRepository.electricPrice,
@@ -1649,7 +1617,6 @@ class AdminHomeActivity : AppCompatActivity() {
                 MotelRepository.serviceFee
             )
         }
-
         val paid = rooms
             .filter { it.status == "PAID" }
             .sumOf {
@@ -1659,346 +1626,239 @@ class AdminHomeActivity : AppCompatActivity() {
                     MotelRepository.serviceFee
                 )
             }
-
-        val c = box(body)
-
+        val c = card(body)
         c.addView(
-            label(
-                "Tổng hóa đơn tính thử",
-                14f,
-                true
-            )
+            text("Tổng hóa đơn tính thử", 16f, true)
         )
-
         c.addView(
-            label(
+            text(
                 price(total),
-                25f,
-                true,
-                green
-            )
+                28f, true, green
+            ),
+            LinearLayout.LayoutParams(-1, -2).apply {
+                topMargin = dp(10)
+            }
         )
-
-        paragraph(
-            c,
-            "Đã đánh dấu thanh toán: ${price(paid)}\n" +
-                    "Còn lại: ${price(total - paid)}"
-        )
-
+        detailRow(c, "Đã thu", price(paid))
+        detailRow(c, "Chưa thu", price(total - paid))
         paragraph(
             body,
-            "Chưa phải doanh thu toàn hệ thống hay " +
-                    "báo cáo lịch sử. Dự án hiện chỉ có dữ liệu phòng mẫu."
+            "Báo cáo hiện dựa trên dữ liệu phòng mẫu. " +
+                    "Chưa phản ánh doanh thu toàn hệ thống."
         )
-
-        action(body, "XUẤT BÁO CÁO") {
-            route("reportExport")
+        button(body, "XUẤT BÁO CÁO") {
+            show("reportExport")
         }
     }
-
-    // =========================================
-    // 21. XUẤT BÁO CÁO
-    // =========================================
-
     private fun reportExport() {
-
-        val c = box(body)
-
+        val c = card(body)
         c.addView(
-            label(
-                "Xuất báo cáo mẫu",
-                17f,
-                true
-            )
+            text("Xuất báo cáo mẫu", 19f, true)
         )
-
         paragraph(
             c,
-            "Bản demo chưa kết xuất PDF/Excel. " +
-                    "Bạn có thể sao chép thống kê và " +
-                    "phát triển xuất CSV ở bước tiếp theo."
+            "Chức năng xuất PDF hoặc Excel chưa được " +
+                    "triển khai trong phiên bản demo."
         )
-
-        action(body, "XÁC NHẬN") {
-
+        button(body, "XÁC NHẬN") {
             finishAction(
                 "Đã yêu cầu xuất báo cáo mẫu",
                 "reports"
             )
         }
     }
-
-    // =========================================
-    // 22. PHÂN QUYỀN
-    // =========================================
-
+    private fun notifications() {
+        val maintenanceCount =
+            MotelRepository.maintenanceList.count {
+                it.status != "DONE"
+            }
+        val overdueCount = MotelRepository.rooms.count {
+            it.status == "OVERDUE"
+        }
+        entry(
+            body,
+            "Bảo trì chưa hoàn thành",
+            "$maintenanceCount yêu cầu cần theo dõi"
+        ) {
+            show("maintenance")
+        }
+        entry(
+            body,
+            "Hóa đơn quá hạn",
+            "$overdueCount phòng có công nợ"
+        ) {
+            show("invoices")
+        }
+        entry(
+            body,
+            "Hệ thống đang ở chế độ Demo",
+            "Chưa tích hợp thông báo đẩy hoặc email"
+        ) {
+            info(
+                "Cần Firebase Cloud Messaging hoặc " +
+                        "backend để gửi thông báo thật."
+            )
+        }
+    }
     private fun roles() {
-
         listOf(
             "ADMIN" to
-                    "Quản lý tài khoản, nhà trọ, cấu hình và giám sát",
-
+                    "Quản lý hệ thống, người dùng và nhà trọ",
             "CHU_TRO" to
                     "Quản lý nhà trọ được phân công",
-
             "KHACH_THUE" to
                     "Theo dõi thông tin thuê và gửi yêu cầu"
-        ).forEach { (t, d) ->
-
-            entry(body, t, d) {
-
+        ).forEach { (name, description) ->
+            entry(body, name, description) {
                 info(
-                    "Phân quyền thật cần được kiểm soát tại backend."
+                    "Phân quyền thật cần được " +
+                            "kiểm soát tại backend."
                 )
             }
         }
-
         heading("Giới hạn an toàn")
-
+        val c = card(body)
         paragraph(
-            body,
+            c,
             "Admin không được xem mật khẩu gốc " +
-                    "hoặc trực tiếp sửa giao dịch thanh toán " +
-                    "của người thuê."
+                    "hoặc tự ý xác nhận giao dịch thanh toán."
         )
     }
-
-    // =========================================
-    // 23. NHẬT KÝ HOẠT ĐỘNG
-    // =========================================
-
     private fun audit() {
-
-        val items = AdminStore.audit(this)
-
-        if (items.isEmpty()) {
-
-            entry(
-                body,
-                "Chưa có hoạt động",
-                "Hãy thử thêm tài khoản hoặc nhà trọ"
-            ) {}
-
-        } else {
-
-            items.forEach {
-
-                entry(
-                    body,
-                    it,
-                    ""
-                ) {}
-            }
+        val logs = AdminStore.audit(this)
+        if (logs.isEmpty()) {
+            val c = card(body)
+            c.addView(text("Chưa có hoạt động", 18f, true))
+            paragraph(
+                c,
+                "Các thao tác quản trị sẽ xuất hiện tại đây."
+            )
+            return
+        }
+        logs.forEach { log ->
+            entry(body, log, "") {}
         }
     }
-
-    // =========================================
-    // 24. CÀI ĐẶT ADMIN
-    // =========================================
-
     private fun settings() {
-
         entry(
             body,
             "Phân quyền",
             "Vai trò ADMIN, CHU_TRO, KHACH_THUE"
         ) {
-            route("roles")
+            show("roles")
         }
-
         entry(
             body,
             "Nhật ký hoạt động",
-            "Lịch sử thao tác Demo"
+            "Lịch sử thao tác quản trị"
         ) {
-            route("audit")
+            show("audit")
         }
-
         entry(
             body,
             "Thông báo hệ thống",
             "Công nợ và bảo trì"
         ) {
-            route("notifications")
+            show("notifications")
         }
-
         entry(
             body,
             "Hồ sơ Admin",
             "Thông tin tài khoản quản trị"
         ) {
-            route("profile")
+            show("profile")
         }
-
         entry(
             body,
             "Cấu hình nâng cao",
-            "Chức năng cần backend triển khai"
+            "Chức năng đang phát triển"
         ) {
-            route("empty")
+            show("empty")
         }
     }
-
-    // =========================================
-    // 25. HỒ SƠ ADMIN
-    // =========================================
-
     private fun profile() {
-
-        val c = box(body)
-
+        val c = card(body)
         c.addView(
-            label(
-                "Quản trị viên",
-                19f,
-                true
-            )
+            text("Quản trị viên", 21f, true)
         )
-
-        paragraph(
+        detailRow(
             c,
-            "admin@nhatroxanh.vn\n" +
-                    "Vai trò: ADMIN (demo)"
+            "Email",
+            "admin@nhatroxanh.vn"
         )
+        detailRow(c, "Vai trò", "ADMIN (Demo)")
 
-        action(body, "ĐỔI MẬT KHẨU") {
-            route("changePassword")
+        button(body, "ĐỔI MẬT KHẨU") {
+            show("changePassword")
         }
-
-        shortAction(body, "ĐĂNG XUẤT") {
-            route("logout")
+        button(body, "ĐĂNG XUẤT", true) {
+            show("logout")
         }
     }
-
-    // =========================================
-    // 26. ĐỔI MẬT KHẨU
-    // =========================================
-
     private fun changePassword() {
-
-        val a = edit(
-            body,
-            "Mật khẩu hiện tại"
-        )
-
-        val b = edit(
-            body,
-            "Mật khẩu mới"
-        )
-
-        val c = edit(
-            body,
-            "Nhập lại mật khẩu"
-        )
-
-        listOf(a, b, c).forEach {
+        val currentPassword =
+            input(body, "Mật khẩu hiện tại")
+        val newPassword =
+            input(body, "Mật khẩu mới")
+        val confirmPassword =
+            input(body, "Nhập lại mật khẩu")
+        listOf(
+            currentPassword,
+            newPassword,
+            confirmPassword
+        ).forEach {
             it.inputType =
                 android.text.InputType.TYPE_CLASS_TEXT or
-                        android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                        android.text.InputType
+                            .TYPE_TEXT_VARIATION_PASSWORD
         }
-
-        action(body, "LƯU MẬT KHẨU") {
-
+        button(body, "LƯU MẬT KHẨU") {
             info(
-                "Không thể đổi mật khẩu demo tại đây: " +
-                        "AdminDemoAuth đang dùng hằng số cố định. " +
-                        "Cần backend xác thực để hỗ trợ " +
-                        "đổi mật khẩu an toàn."
+                "Chưa thể đổi mật khẩu trong bản demo. " +
+                        "AdminDemoAuth đang dùng tài khoản cố định. " +
+                        "Cần backend để đổi mật khẩu an toàn."
             )
         }
     }
-
-    // =========================================
-    // 27. THÔNG BÁO THÀNH CÔNG
-    // =========================================
-
-    private fun saved() {
-
-        entry(
-            body,
-            "✓ Thao tác thành công",
-            "Quay về trang tổng quan"
-        ) {
-            route("dashboard")
-        }
-    }
-
-    // =========================================
-    // 28. ĐĂNG XUẤT ADMIN
-    // =========================================
-
     private fun logout() {
-
-        val c = box(body)
-
+        val c = card(body)
         c.addView(
-            label(
+            text(
                 "Bạn muốn đăng xuất khỏi tài khoản Admin?",
-                16f,
-                true
+                19f, true
             )
         )
-
-        action(
-            body,
-            "XÁC NHẬN ĐĂNG XUẤT"
-        ) {
-
-            confirm(
-                "Bạn có chắc chắn muốn đăng xuất?"
-            ) {
-
+        button(body, "XÁC NHẬN ĐĂNG XUẤT") {
+            confirm("Bạn có chắc chắn muốn đăng xuất?") {
                 val intent = Intent(
                     this,
                     LoginActivity::class.java
                 ).apply {
-
-                    putExtra(
-                        "INITIAL_TAB",
-                        "ADMIN"
-                    )
-
+                    putExtra("INITIAL_TAB", "ADMIN")
                     flags =
                         Intent.FLAG_ACTIVITY_NEW_TASK or
                                 Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
-
                 startActivity(intent)
                 finish()
             }
         }
-
-        shortAction(body, "HỦY") {
-            route("profile")
+        button(body, "HỦY", true) {
+            show("profile")
         }
     }
-
-    // =========================================
-    // 29. TRẠNG THÁI CHƯA CÓ DỮ LIỆU
-    // =========================================
-
     private fun empty() {
-
-        val c = box(body)
-
+        val c = card(body)
         c.addView(
-            label(
+            text(
                 "Chức năng đang được phát triển",
-                17f,
-                true
+                19f, true
             )
         )
-
         paragraph(
             c,
-            "Cần kết nối database và API " +
-                    "để thực hiện nghiệp vụ đầy đủ."
+            "Cần kết nối cơ sở dữ liệu và API " +
+                    "để triển khai nghiệp vụ đầy đủ."
         )
     }
-
-    // =========================================
-    // 30. XỬ LÝ NÚT BACK
-    // =========================================
-
-
 }
