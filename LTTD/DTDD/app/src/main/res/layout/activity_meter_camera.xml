@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark_camera">
+
+    <!-- =========================================================
+         TRẠNG THÁI 1: MÀN HÌNH CAMERA CHỤP CÔNG TƠ (Property 1=Photos)
+         ========================================================= -->
+    <LinearLayout
+        android:id="@+id/layoutCameraLive"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/btnBackFromCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:paddingVertical="6dp"
+            android:text="‹ Phòng 204"
+            android:textColor="@color/accent_gold"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <!-- Khung ngắm công tơ -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="310dp"
+            android:layout_marginTop="44dp"
+            android:background="@drawable/bg_camera_viewfinder"
+            android:padding="16dp">
+
+            <!-- Vỏ đồng hồ điện -->
+            <FrameLayout
+                android:layout_width="210dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_meter_housing">
+
+                <!-- Màn hình LCD công tơ -->
+                <FrameLayout
+                    android:layout_width="130dp"
+                    android:layout_height="46dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_meter_lcd">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:letterSpacing="0.08"
+                        android:text="01568"
+                        android:textColor="#1B2A1B"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
+            </FrameLayout>
+
+            <!-- Khung viền vàng nhận diện AI -->
+            <FrameLayout
+                android:layout_width="244dp"
+                android:layout_height="136dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_scan_frame_gold" />
+
+            <!-- Pill thông báo AI đang nhận diện -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/bg_pill_black_overlay"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="6dp"
+                android:text="✨ AI đang nhận diện · giữ máy thẳng"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </FrameLayout>
+
+        <!-- Cụm nút điều khiển máy ảnh: Thư viện | Nút Chụp | Đèn -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:paddingHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/btnCameraGallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:padding="8dp"
+                android:text="🖼 Thư viện"
+                android:textColor="#C5D3D0"
+                android:textSize="13sp" />
+
+            <!-- Nút chụp ảnh (Bấm -> Chuyển sang màn Fail cảnh báo hoặc Photo) -->
+            <FrameLayout
+                android:id="@+id/btnShutterCapture"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/bg_shutter_outer"
+                android:clickable="true"
+                android:focusable="true">
+
+                <View
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_shutter_inner" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/btnCameraFlash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:padding="8dp"
+                android:text="🔦 Đèn"
+                android:textColor="#C5D3D0"
+                android:textSize="13sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- =========================================================
+         TRẠNG THÁI 2: CẢNH BÁO BẤT THƯỜNG (Fail - Phòng 205)
+         ========================================================= -->
+    <ScrollView
+        android:id="@+id/layoutCameraFail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/btnBackFromFail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:paddingVertical="6dp"
+                android:text="‹ Phòng 205"
+                android:textColor="@color/accent_gold"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- Ảnh thu nhỏ công tơ 02140 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="112dp"
+                android:background="@drawable/bg_camera_viewfinder">
+
+                <FrameLayout
+                    android:layout_width="148dp"
+                    android:layout_height="68dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_meter_housing">
+
+                    <FrameLayout
+                        android:layout_width="92dp"
+                        android:layout_height="34dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_meter_lcd">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="02140"
+                            android:textColor="#1B2A1B"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="178dp"
+                    android:layout_height="82dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_scan_frame_coral" />
+            </FrameLayout>
+
+            <!-- Badge Bất thường + Số kWh -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_pill_coral"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="⚠ Bất thường"
+                android:textColor="@color/primary_green"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:text="2.140 kWh"
+                android:textColor="@color/white"
+                android:textSize="34sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="2dp"
+                android:text="Độ chính xác 91%"
+                android:textColor="#9FB5B1"
+                android:textSize="13sp" />
+
+            <!-- Hộp cảnh báo đỏ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_warning_box"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="2dp"
+                    android:text="Phòng này dùng 638 kWh, gấp 7 lần mức trung bình 90 kWh/tháng. Hãy kiểm tra lại công tơ hoặc chụp lại ảnh."
+                    android:textColor="@color/pill_red_text"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Bảng Số cũ / Số AI đọc -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/bg_dark_card"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Số cũ"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="1.502"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_dark_card" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Số AI đọc"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="2.140"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <!-- Nút Chụp lại -> Chuyển sang màn Photo (AI đọc thành công 1.568) -->
+            <TextView
+                android:id="@+id/btnFailRetake"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_btn_primary"
+                android:gravity="center"
+                android:text="Chụp lại"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- Nút Vẫn xác nhận 2.140 -> Về màn Ghi chỉ số -->
+            <TextView
+                android:id="@+id/btnFailConfirmAnyway"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_btn_dark_outline"
+                android:gravity="center"
+                android:text="Vẫn xác nhận 2.140"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- =========================================================
+         TRẠNG THÁI 3: AI ĐỌC THÀNH CÔNG (Photo - 1.568 kWh)
+         ========================================================= -->
+    <ScrollView
+        android:id="@+id/layoutCameraSuccess"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/btnBackFromSuccess"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
+                android:paddingVertical="6dp"
+                android:text="‹ Chụp lại"
+                android:textColor="@color/accent_gold"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- Ảnh thu nhỏ công tơ 01568 -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="112dp"
+                android:background="@drawable/bg_camera_viewfinder">
+
+                <FrameLayout
+                    android:layout_width="148dp"
+                    android:layout_height="68dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_meter_housing">
+
+                    <FrameLayout
+                        android:layout_width="92dp"
+                        android:layout_height="34dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_meter_lcd">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="01568"
+                            android:textColor="#1B2A1B"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="178dp"
+                    android:layout_height="82dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_scan_frame_mint" />
+            </FrameLayout>
+
+            <!-- Badge AI đọc được + 1.568 kWh -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_pill_gold"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="✨ AI đọc được"
+                android:textColor="@color/primary_green"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="4dp"
+                android:text="1.568 kWh"
+                android:textColor="@color/white"
+                android:textSize="34sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="2dp"
+                android:text="Độ chính xác 98%"
+                android:textColor="#9FB5B1"
+                android:textSize="13sp" />
+
+            <!-- Bảng Số cũ / Tiêu thụ / Thành tiền -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/bg_dark_card"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Số cũ (tháng 9)"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="1.482"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_dark_card" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Tiêu thụ"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="86 kWh"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_dark_card" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Thành tiền"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:text="301.000đ"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <!-- Nút Xác nhận và sang phòng 205 -> Về màn Ghi chỉ số -->
+            <TextView
+                android:id="@+id/btnSuccessConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_btn_primary"
+                android:gravity="center"
+                android:text="Xác nhận và sang phòng 205"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- Nút Chụp lại -> Quay về màn Camera (Photos) -->
+            <TextView
+                android:id="@+id/btnSuccessRetake"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_btn_dark_outline"
+                android:gravity="center"
+                android:text="Chụp lại"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
