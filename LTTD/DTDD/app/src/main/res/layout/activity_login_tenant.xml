@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F5F5F5">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="#154B40"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nhà Trọ Xanh"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quản lý khu trọ dễ dàng"
+            android:textColor="#A5D6A7" />
+    </LinearLayout>
+
+    <!-- Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <EditText
+            android:id="@+id/edtRoomCode"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Mã phòng (VD: SP203)"
+            android:background="@android:color/white"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/edtPasswordTenant"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Mật khẩu"
+            android:inputType="textPassword"
+            android:background="@android:color/white"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnLoginTenant"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Đăng nhập"
+            android:backgroundTint="#154B40"
+            android:textColor="#FFFFFF"/>
+
+        <Button
+            android:id="@+id/btnForgotPassTenant"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Quên mật khẩu?"
+            android:backgroundTint="#FFFFFF"
+            android:textColor="#154B40"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</LinearLayout>
